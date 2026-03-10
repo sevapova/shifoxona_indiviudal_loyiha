@@ -1,0 +1,128 @@
+{% extends 'hospital/base.html' %}
+
+{% block content %}
+<div class="cards">
+    <!-- Card 1 -->
+    <div class="card glass-card">
+        <div class="card-icon pink-gradient">
+            <i class="fa-solid fa-user-doctor"></i>
+        </div>
+        <div class="card-info">
+            <h3>{{ shifokorlar_soni }}</h3>
+            <p data-i18n="total_doctors">Malakali Shifokorlar</p>
+        </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="card glass-card">
+        <div class="card-icon green-gradient">
+            <i class="fa-solid fa-user-nurse"></i>
+        </div>
+        <div class="card-info">
+            <h3>{{ amaliyotchilar_soni }}</h3>
+            <p data-i18n="total_interns">Amaliyotchilar</p>
+        </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="card glass-card">
+        <div class="card-icon blue-gradient">
+            <i class="fa-solid fa-bed-pulse"></i>
+        </div>
+        <div class="card-info">
+            <h3>{{ kasal_bemorlar_soni }}</h3>
+            <p data-i18n="sick_patients">Davolanayotgan Bemorlar</p>
+        </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="card glass-card">
+        <div class="card-icon orange-gradient">
+            <i class="fa-solid fa-person-walking-arrow-right"></i>
+        </div>
+        <div class="card-info">
+            <h3>{{ tuzalgan_bemorlar_soni }}</h3>
+            <p data-i18n="recovered_patients">Tuzalgan Bemorlar</p>
+        </div>
+    </div>
+</div>
+
+<div class="bottom-section">
+    <!-- Bemorlar List -->
+    <div class="patient-list glass-card">
+        <div class="list-header">
+            <h2><i class="fa-solid fa-users"></i> <span data-i18n="recent_patients">Kelgan Bemorlar</span></h2>
+            <a href="/admin/hospital/bemor/" target="_blank" class="view-all" data-i18n="view_all">Hammasi →</a>
+        </div>
+        <ul class="d-list">
+            {% for b in bemorlar %}
+            <li>
+                <div class="d-profile">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3006/3006876.png" alt="Patient">
+                    <div class="d-details">
+                        <h4>{{ b.ism }} {{ b.familiya }}</h4>
+                        <span>{{ b.telefon_raqam }} | {{ b.manzil }}</span>
+                        <div style="font-size: 11px; margin-top:2px; color:#94a3b8;">
+                            <span data-i18n="arrived">Kelgan vaqti</span>: {{ b.kelgan_vaqti|date:"d-m-Y" }} <br>
+                            {% if b.tuzalgan_vaqti %}
+                            <span data-i18n="healed">Tuzalgan vaqti</span>: <span style="color:#059669">{{
+                                b.tuzalgan_vaqti|date:"d-m-Y" }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="d-experience">
+                    {% if b.holati == 'kasal' %}
+                    <span class="badge orange" data-i18n="sick">Kasal (Davolanmoqda)</span>
+                    {% else %}
+                    <span class="badge green" data-i18n="recovered">Tuzalgan</span>
+                    {% endif %}
+                </div>
+                <a href="/admin/hospital/bemor/{{ b.id }}/change/" target="_blank" class="mini-btn"><i
+                        class="fa-solid fa-file-pen"></i></a>
+            </li>
+            {% empty %}
+            <li data-i18n="no_pat">
+                Tizimda hozircha bemorlar mavjud emas.
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Shifokorlar List -->
+    <div class="doctor-list glass-card">
+        <div class="list-header">
+            <h2><i class="fa-solid fa-stethoscope"></i> <span data-i18n="top_doctors">Shifokorlar Ro'yxati</span></h2>
+            <a href="/admin/hospital/shifokor/" target="_blank" class="view-all" data-i18n="view_all">Hammasi →</a>
+        </div>
+        <ul class="d-list">
+            {% for ds in shifokorlar %}
+            <li>
+                <div class="d-profile">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3774/3774299.png" alt="Doctor">
+                    <div class="d-details">
+                        <h4>Dr. {{ ds.ism }} {{ ds.familiya }}</h4>
+                        <span>
+                            Mutaxassis:
+                            {% for kasallik in ds.kasallik_yonalishlari.all %}
+                            {{ kasallik.nomi }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                </div>
+                <div class="d-experience">
+                    <span class="badge">{{ ds.ish_tajribasi_yillar }} <span data-i18n="exp_years">yil
+                            tajriba</span></span>
+                </div>
+                <a href="/admin/hospital/shifokor/{{ ds.id }}/change/" target="_blank" class="mini-btn"><i
+                        class="fa-solid fa-eye"></i></a>
+            </li>
+            {% empty %}
+            <li data-i18n="no_doc">
+                Tizimda hozircha shifokorlar mavjud emas.
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

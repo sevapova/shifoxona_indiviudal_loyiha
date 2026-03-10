@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Shifoxonani Boshqarish Tizimi{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'hospital/css/style.css' %}">
+</head>
+
+<body>
+
+    <!-- Background Elements -->
+    <div class="circle circle-1"></div>
+    <div class="circle circle-2"></div>
+    <div class="circle circle-3"></div>
+
+    <div class="glass-container">
+        <!-- Sidebar Navbar -->
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-hospital-user"></i>
+                <h2 data-i18n="hospital">Shifoxona</h2>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" class="active"><i class="fa-solid fa-chart-line"></i> <span
+                            data-i18n="dashboard">Dashboard</span></a></li>
+                <li><a href="/admin/hospital/shifokor/" target="_blank"><i class="fa-solid fa-user-doctor"></i> <span
+                            data-i18n="doctors">Shifokorlar</span></a></li>
+                <li><a href="/admin/hospital/amaliyotchi/" target="_blank"><i class="fa-solid fa-user-nurse"></i> <span
+                            data-i18n="interns">Amaliyotchilar</span></a></li>
+                <li><a href="/admin/hospital/bemor/" target="_blank"><i class="fa-solid fa-users"></i> <span
+                            data-i18n="patients">Bemorlar</span></a></li>
+                <li><a href="/admin/hospital/kasallik/" target="_blank"><i class="fa-solid fa-virus"></i> <span
+                            data-i18n="diseases">Kasalliklar turi</span></a></li>
+                <li><a href="/admin/hospital/uchrashuv/" target="_blank"><i class="fa-solid fa-calendar-check"></i>
+                        <span data-i18n="appointments">Uchrashuvlar</span></a></li>
+
+                <div class="auth-langs">
+                    <div class="lang-selector">
+                        <select id="langSwitch" onchange="changeLanguage(this.value)">
+                            <option value="uz">🇺🇿 O'zbekcha</option>
+                            <option value="ru">🇷🇺 Русский</option>
+                            <option value="en">🇬🇧 English</option>
+                        </select>
+                    </div>
+                </div>
+
+                <li><a href="/admin/" target="_blank" class="admin-btn"><i class="fa-solid fa-gears"></i> <span
+                            data-i18n="admin_panel">Admin Panel</span></a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header>
+                <div class="header-title">
+                    <h1 data-i18n="welcome">Xush kelibsiz!</h1>
+                    <p data-i18n="dashboard_desc">Shifoxona boshqaruv markazi</p>
+                </div>
+                <div class="user-profile">
+                    <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" alt="Admin">
+                    <div class="user-info">
+                        <span class="user-name">Admin</span>
+                        <span class="user-role" data-i18n="administrator">Administrator</span>
+                    </div>
+                </div>
+            </header>
+
+            <section class="content">
+                {% block content %}
+                {% endblock %}
+            </section>
+        </main>
+    </div>
+
+    <!-- Simple i18n Script for 3 Languages -->
+    <script>
+        const translations = {
+            'uz': {
+                'hospital': 'Shifoxona',
+                'dashboard': 'Dashboard',
+                'doctors': 'Shifokorlar',
+                'interns': 'Amaliyotchilar',
+                'patients': 'Bemorlar',
+                'diseases': 'Kasalliklar turi',
+                'appointments': 'Uchrashuvlar',
+                'admin_panel': 'Admin Panel',
+                'welcome': 'Xush kelibsiz!',
+                'dashboard_desc': 'Shifoxona boshqaruv markazi',
+                'administrator': 'Administrator',
+                'total_doctors': 'Malakali Shifokorlar',
+                'total_interns': 'Amaliyotchilar',
+                'sick_patients': 'Davolanayotgan Bemorlar',
+                'recovered_patients': 'Tuzalgan Bemorlar',
+                'top_doctors': 'Shifokorlar Ro\'yxati',
+                'view_all': 'Hammasi →',
+                'recent_patients': 'Kelgan Bemorlar',
+                'arrived': 'Kelgan vaqti',
+                'healed': 'Tuzalgan vaqti',
+                'sick': 'Kasal',
+                'recovered': 'Tuzalgan',
+                'sys_health': 'Tizim Holati',
+                'server_status': 'Server Ishlashi',
+                'db_status': 'Ma\'lumotlar Baza',
+                'bot_status': 'Telegram Bot Aloqasi',
+                'exp_years': 'yil tajriba',
+                'no_doc': 'Tizimda hozircha shifokorlar mavjud emas.',
+                'no_pat': 'Tizimda hozircha bemorlar mavjud emas.',
+            },
+            'ru': {
+                'hospital': 'Больница',
+                'dashboard': 'Панель',
+                'doctors': 'Врачи',
+                'interns': 'Стажеры',
+                'patients': 'Пациенты',
+                'diseases': 'Типы болезней',
+                'appointments': 'Записи',
+                'admin_panel': 'Админ Панель',
+                'welcome': 'Добро пожаловать!',
+                'dashboard_desc': 'Центр управления больницей',
+                'administrator': 'Администратор',
+                'total_doctors': 'Квалифицированные врачи',
+                'total_interns': 'Стажеры в клинике',
+                'sick_patients': 'Лечащиеся Пациенты',
+                'recovered_patients': 'Выздоровевшие Пациенты',
+                'top_doctors': 'Список врачей',
+                'view_all': 'Все →',
+                'recent_patients': 'Поступившие пациенты',
+                'arrived': 'Время прибытия',
+                'healed': 'Время выписки',
+                'sick': 'Болен',
+                'recovered': 'Здоров',
+                'sys_health': 'Состояние Системы',
+                'server_status': 'Работа Сервера',
+                'db_status': 'База Данных',
+                'bot_status': 'Связь с Телеграм Ботом',
+                'exp_years': 'лет опыта',
+                'no_doc': 'Врачи пока отсутствуют в системе.',
+                'no_pat': 'Пациенты пока отсутствуют в системе.',
+            },
+            'en': {
+                'hospital': 'Hospital',
+                'dashboard': 'Dashboard',
+                'doctors': 'Doctors',
+                'interns': 'Interns',
+                'patients': 'Patients',
+                'diseases': 'Disease Types',
+                'appointments': 'Appointments',
+                'admin_panel': 'Admin Panel',
+                'welcome': 'Welcome!',
+                'dashboard_desc': 'Hospital Management Center',
+                'administrator': 'Administrator',
+                'total_doctors': 'Qualified Doctors',
+                'total_interns': 'Hospital Interns',
+                'sick_patients': 'Patients under Treatment',
+                'recovered_patients': 'Recovered Patients',
+                'top_doctors': 'Doctors List',
+                'view_all': 'View All →',
+                'recent_patients': 'Recent Patients',
+                'arrived': 'Arrival time',
+                'healed': 'Recovery time',
+                'sick': 'Sick',
+                'recovered': 'Recovered',
+                'sys_health': 'System Health',
+                'server_status': 'Server Status',
+                'db_status': 'Database Connection',
+                'bot_status': 'Telegram Bot Status',
+                'exp_years': 'years exp.',
+                'no_doc': 'No doctors available in the system yet.',
+                'no_pat': 'No patients available in the system yet.',
+            }
+        };
+
+        function changeLanguage(lang) {
+            document.documentElement.lang = lang;
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerText = translations[lang][key];
+                }
+            });
+            localStorage.setItem('lang', lang);
+        }
+
+        // Initialize language
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('lang') || 'uz';
+            document.getElementById('langSwitch').value = savedLang;
+            changeLanguage(savedLang);
+        });
+    </script>
+
+    <!-- Floating Telegram Bot Button -->
+    <a href="https://t.me/shifoxona_pro_bot" target="_blank" class="telegram-float" title="Telegram Bot">
+        <i class="fa-brands fa-telegram"></i>
+        <span class="tg-pulse"></span>
+    </a>
+
+    <style>
+        .telegram-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ec4899, #db2777);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 28px;
+            text-decoration: none;
+            z-index: 9999;
+            box-shadow: 0 6px 25px rgba(236, 72, 153, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .telegram-float:hover {
+            transform: scale(1.15);
+            box-shadow: 0 8px 35px rgba(236, 72, 153, 0.55);
+        }
+
+        .tg-pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid rgba(236, 72, 153, 0.5);
+            animation: tgPulse 2s ease-out infinite;
+        }
+
+        @keyframes tgPulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.6);
+                opacity: 0;
+            }
+        }
+    </style>
+</body>
+
+</html>
