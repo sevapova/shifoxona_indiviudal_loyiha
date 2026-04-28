@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     {% load static %}
-    <link rel="stylesheet" href="{% static 'hospital/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'hospital/css/style.css' %}?v=1.2">
 </head>
 
 <body>
@@ -30,7 +30,7 @@
             </div>
             <ul class="nav-links">
                 <li><a href="#" class="active"><i class="fa-solid fa-chart-line"></i> <span
-                            data-i18n="dashboard">Dashboard</span></a></li>
+                            data-i18n="dashboard">Boshqaruv paneli</span></a></li>
                 <li><a href="/admin/hospital/shifokor/" target="_blank"><i class="fa-solid fa-user-doctor"></i> <span
                             data-i18n="doctors">Shifokorlar</span></a></li>
                 <li><a href="/admin/hospital/amaliyotchi/" target="_blank"><i class="fa-solid fa-user-nurse"></i> <span
@@ -64,6 +64,12 @@
                     <h1 data-i18n="welcome">Xush kelibsiz!</h1>
                     <p data-i18n="dashboard_desc">Shifoxona boshqaruv markazi</p>
                 </div>
+                
+                <div class="header-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="globalSearch" placeholder="Qidirish..." data-i18n="search_placeholder" onkeyup="filterContent()">
+                </div>
+
                 <div class="user-profile">
                     <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" alt="Admin">
                     <div class="user-info">
@@ -104,15 +110,18 @@
                 'recent_patients': 'Kelgan Bemorlar',
                 'arrived': 'Kelgan vaqti',
                 'healed': 'Tuzalgan vaqti',
-                'sick': 'Kasal',
+                'sick': 'Kasal (Davolanmoqda)',
                 'recovered': 'Tuzalgan',
                 'sys_health': 'Tizim Holati',
                 'server_status': 'Server Ishlashi',
-                'db_status': 'Ma\'lumotlar Baza',
+                'db_status': 'Ma\'lumotlar Bazasi',
                 'bot_status': 'Telegram Bot Aloqasi',
                 'exp_years': 'yil tajriba',
                 'no_doc': 'Tizimda hozircha shifokorlar mavjud emas.',
                 'no_pat': 'Tizimda hozircha bemorlar mavjud emas.',
+                'no_diseases': 'Kasallik turlari kiritilmagan.',
+                'specialist': 'Mutaxassis:',
+                'search_placeholder': 'Ism, familiya yoki telefon...',
             },
             'ru': {
                 'hospital': 'Больница',
@@ -135,8 +144,8 @@
                 'recent_patients': 'Поступившие пациенты',
                 'arrived': 'Время прибытия',
                 'healed': 'Время выписки',
-                'sick': 'Болен',
-                'recovered': 'Здоров',
+                'sick': 'Болен (Лечится)',
+                'recovered': 'Выздоровел',
                 'sys_health': 'Состояние Системы',
                 'server_status': 'Работа Сервера',
                 'db_status': 'База Данных',
@@ -144,6 +153,9 @@
                 'exp_years': 'лет опыта',
                 'no_doc': 'Врачи пока отсутствуют в системе.',
                 'no_pat': 'Пациенты пока отсутствуют в системе.',
+                'no_diseases': 'Типы болезней не введены.',
+                'specialist': 'Специалист:',
+                'search_placeholder': 'Имя, фамилия или телефон...',
             },
             'en': {
                 'hospital': 'Hospital',
@@ -166,7 +178,7 @@
                 'recent_patients': 'Recent Patients',
                 'arrived': 'Arrival time',
                 'healed': 'Recovery time',
-                'sick': 'Sick',
+                'sick': 'Sick (In Treatment)',
                 'recovered': 'Recovered',
                 'sys_health': 'System Health',
                 'server_status': 'Server Status',
@@ -175,28 +187,60 @@
                 'exp_years': 'years exp.',
                 'no_doc': 'No doctors available in the system yet.',
                 'no_pat': 'No patients available in the system yet.',
+                'no_diseases': 'Disease types not entered.',
+                'specialist': 'Specialist:',
+                'search_placeholder': 'Name, surname or phone...',
             }
         };
 
         function changeLanguage(lang) {
-            document.documentElement.lang = lang;
-            const elements = document.querySelectorAll('[data-i18n]');
-            elements.forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[lang] && translations[lang][key]) {
-                    el.innerText = translations[lang][key];
+            localStorage.setItem('selectedLanguage', lang);
+            // Set cookie for Django backend
+            document.cookie = "django_language=" + lang + "; path=/";
+            
+            // Reload to apply everything properly
+            window.location.reload();
+        }
+
+        function filterContent() {
+            const input = document.getElementById('globalSearch');
+            const filter = input.value.toLowerCase();
+            const listItems = document.querySelectorAll('.d-list li');
+            
+            listItems.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                if (text.includes(filter)) {
+                    item.style.display = "";
+                    item.style.animation = "fadeIn 0.3s ease forwards";
+                } else {
+                    item.style.display = "none";
                 }
             });
-            localStorage.setItem('lang', lang);
         }
 
         // Initialize language
         document.addEventListener('DOMContentLoaded', () => {
-            const savedLang = localStorage.getItem('lang') || 'uz';
-            document.getElementById('langSwitch').value = savedLang;
-            changeLanguage(savedLang);
+            const savedLang = localStorage.getItem('selectedLanguage') || 'uz';
+            const langSelector = document.getElementById('langSwitch');
+            if (langSelector) {
+                langSelector.value = savedLang;
+            }
+            
+            // Apply translations to all languages
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[savedLang] && translations[savedLang][key]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.placeholder = translations[savedLang][key];
+                    } else {
+                        el.textContent = translations[savedLang][key];
+                    }
+                }
+            });
         });
     </script>
+
 
     <!-- Floating Telegram Bot Button -->
     <a href="https://t.me/shifoxona_pro_bot" target="_blank" class="telegram-float" title="Telegram Bot">
@@ -250,6 +294,7 @@
             }
         }
     </style>
+
 </body>
 
 </html>

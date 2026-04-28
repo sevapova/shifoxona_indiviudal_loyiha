@@ -4,7 +4,7 @@
 <div class="cards">
     <!-- Card 1 -->
     <div class="card glass-card">
-        <div class="card-icon pink-gradient">
+        <div class="card-icon blue-gradient-1">
             <i class="fa-solid fa-user-doctor"></i>
         </div>
         <div class="card-info">
@@ -26,7 +26,7 @@
 
     <!-- Card 3 -->
     <div class="card glass-card">
-        <div class="card-icon blue-gradient">
+        <div class="card-icon blue-gradient-2">
             <i class="fa-solid fa-bed-pulse"></i>
         </div>
         <div class="card-info">
@@ -73,7 +73,7 @@
                 </div>
                 <div class="d-experience">
                     {% if b.holati == 'kasal' %}
-                    <span class="badge orange" data-i18n="sick">Kasal (Davolanmoqda)</span>
+                    <span class="badge orange" data-i18n="sick">Kasal</span>
                     {% else %}
                     <span class="badge green" data-i18n="recovered">Tuzalgan</span>
                     {% endif %}
@@ -103,7 +103,7 @@
                     <div class="d-details">
                         <h4>Dr. {{ ds.ism }} {{ ds.familiya }}</h4>
                         <span>
-                            Mutaxassis:
+                            <span data-i18n="specialist">Mutaxassis:</span>
                             {% for kasallik in ds.kasallik_yonalishlari.all %}
                             {{ kasallik.nomi }}{% if not forloop.last %}, {% endif %}
                             {% endfor %}
@@ -125,4 +125,21 @@
         </ul>
     </div>
 </div>
-{% endblock %}
+
+<div class="system-health glass-card" style="margin-top: 25px;">
+    <div class="list-header">
+        <h2><i class="fa-solid fa-virus"></i> <span data-i18n="diseases">Kasalliklar turi</span></h2>
+        <a href="/admin/hospital/kasallik/" target="_blank" class="view-all" data-i18n="view_all">Hammasi →</a>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+        {% for k in kasalliklar %}
+        <div style="background: rgba(255,255,255,0.4); padding: 15px; border-radius: 12px; border: 1px solid rgba(37, 99, 235, 0.1);">
+            <h4 style="font-size: 14px; color: #1e293b; margin-bottom: 5px;">{{ k.nomi }}</h4>
+            <p style="font-size: 12px; color: #64748b;">{{ k.tavsifi|truncatechars:50 }}</p>
+        </div>
+        {% empty %}
+        <p data-i18n="no_diseases" style="font-size: 14px; color: #64748b;">Kasallik turlari kiritilmagan.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

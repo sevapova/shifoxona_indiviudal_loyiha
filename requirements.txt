@@ -2,4 +2,5 @@ Django==4.2.7
 pyTelegramBotAPI==4.29.1
 python-dotenv==1.1.1
 psycopg2-binary==2.9.11
-mysqlclient==2.2.0    
+mysqlclient==2.2.0
+Pillow==10.1.0

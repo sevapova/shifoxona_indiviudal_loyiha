@@ -1,14 +1,47 @@
 {% extends "admin/base.html" %}
 {% load static %}
 
-{% block title %}{{ title }} | Shifoxona Admin{% endblock %}
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
 
 {% block branding %}
-<h1 id="site-name"><a href="{% url 'admin:index' %}">🏥 Shifoxona Admin Panel</a></h1>
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>
 {% endblock %}
 
-{% block extrastyle %}
+{% block extrahead %}
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'hospital/css/admin_custom.css' %}">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+<div class="admin-lang-switcher">
+    <button onclick="setAdminLang('uz')" id="btn-uz" title="O'zbekcha">🇺🇿</button>
+    <button onclick="setAdminLang('ru')" id="btn-ru" title="Русский">🇷🇺</button>
+    <button onclick="setAdminLang('en')" id="btn-en" title="English">🇬🇧</button>
+</div>
+
+<script>
+    function setAdminLang(lang) {
+        // Set cookie and reload
+        document.cookie = "django_language=" + lang + "; path=/";
+        localStorage.setItem('selectedLanguage', lang);
+        window.location.reload();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const cookies = document.cookie.split(';');
+        let currentLang = 'uz';
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'django_language') {
+                currentLang = value;
+                break;
+            }
+        }
+        
+        // Highlight active lang
+        const btn = document.getElementById('btn-' + currentLang);
+        if (btn) btn.classList.add('active-lang');
+    });
+</script>
 {% endblock %}
