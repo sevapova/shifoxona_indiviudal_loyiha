@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; line-height: 1.6; }
+        .header { text-align: center; border-bottom: 2px solid #ff69b4; padding-bottom: 10px; margin-bottom: 20px; }
+        .hospital-name { color: #ff69b4; font-size: 24px; font-weight: bold; }
+        .report-title { font-size: 18px; margin-top: 5px; }
+        .section { margin-bottom: 20px; }
+        .section-title { background: #fce4ec; padding: 5px 10px; font-weight: bold; border-left: 4px solid #ff69b4; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 12px; }
+        th { background-color: #f9f9f9; }
+        .footer { text-align: center; margin-top: 40px; font-size: 10px; color: #777; border-top: 1px solid #eee; padding-top: 10px; }
+        .patient-info p { margin: 5px 0; font-size: 14px; }
+        .label { font-weight: bold; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="hospital-name">SHIFOXONA BOSHQARUV TIZIMI</div>
+        <div class="report-title">BEMORNING TIBBIY HISOBOTI</div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Umumiy ma'lumotlar</div>
+        <div class="patient-info">
+            <p><span class="label">F.I.SH:</span> {{ bemor.ism }} {{ bemor.familiya }}</p>
+            <p><span class="label">Telefon:</span> {{ bemor.telefon_raqam }}</p>
+            <p><span class="label">Yashash manzili:</span> {{ bemor.manzil|default:"-" }}</p>
+            <p><span class="label">Kasallik turi:</span> {{ bemor.kasalligi.nomi|default:"Aniq emas" }}</p>
+            <p><span class="label">Holati:</span> {{ bemor.get_holati_display }}</p>
+            <p><span class="label">Kelgan sana:</span> {{ bemor.kelgan_vaqti|date:"Y-m-d H:i" }}</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Tashxislar va Tibbiy yozuvlar</div>
+        {% if yozuvlar %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sana</th>
+                        <th>Shifokor</th>
+                        <th>Tashxis</th>
+                        <th>Tavsiyalar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for yozuv in yozuvlar %}
+                    <tr>
+                        <td>{{ yozuv.yozuv_sanasi|date:"Y-m-d" }}</td>
+                        <td>Dr. {{ yozuv.shifokor.ism }} {{ yozuv.shifokor.familiya }}</td>
+                        <td>{{ yozuv.tashxis }}</td>
+                        <td>{{ yozuv.tavsiyalar|default:"-" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Hozircha tibbiy yozuvlar mavjud emas.</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <div class="section-title">Uchrashuvlar tarixi</div>
+        {% if uchrashuvlar %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sana va vaqt</th>
+                        <th>Shifokor</th>
+                        <th>Holati</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appt in uchrashuvlar %}
+                    <tr>
+                        <td>{{ appt.sana_va_vaqt|date:"Y-m-d H:i" }}</td>
+                        <td>Dr. {{ appt.shifokor.ism }} {{ appt.shifokor.familiya }}</td>
+                        <td>{{ appt.get_holat_display }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Uchrashuvlar tarixi mavjud emas.</p>
+        {% endif %}
+    </div>
+
+    <div class="footer">
+        Ushbu hujjat elektron shaklda "Shifoxona Boshqaruv Tizimi" tomonidan {{ bugun|date:"Y-m-d H:i" }} da yaratildi.
+    </div>
+</body>
+</html>

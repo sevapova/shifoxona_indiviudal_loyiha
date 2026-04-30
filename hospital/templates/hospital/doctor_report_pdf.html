@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .header { text-align: center; border-bottom: 2px solid #f06292; padding-bottom: 10px; }
+        .info { margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f8bbd0; }
+        .footer { margin-top: 30px; font-size: 10px; color: #888; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SHIFOKOR FAOLIYATI HISOBOTI</h1>
+        <h3>Dr. {{ shifokor.ism }} {{ shifokor.familiya }}</h3>
+        <p>Mutaxassislik: {{ shifokor.mutaxassislik }}</p>
+    </div>
+
+    <div class="info">
+        <p><strong>Hisobot sanasi:</strong> {{ bugun|date:"d.m.Y H:i" }}</p>
+        <p><strong>Ish tajribasi:</strong> {{ shifokor.ish_tajribasi_yillar }} yil</p>
+        <p><strong>Jami uchrashuvlar soni:</strong> {{ uchrashuvlar.count }}</p>
+    </div>
+
+    <h3>Qabul qilingan uchrashuvlar:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Sana</th>
+                <th>Bemor</th>
+                <th>Holat</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in uchrashuvlar %}
+            <tr>
+                <td>{{ u.sana_va_vaqt|date:"d.m.Y H:i" }}</td>
+                <td>{{ u.bemor.ism }} {{ u.bemor.familiya }}</td>
+                <td>{{ u.get_holat_display }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">Uchrashuvlar mavjud emas.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Shifoxona Boshqaruv Tizimi tomonidan avtomatik yaratildi.
+    </div>
+</body>
+</html>

@@ -1,0 +1,72 @@
+:root {
+    --primary: #f8bbd0; /* Soft Pink */
+    --primary-fg: #880e4f; 
+    --header-bg: #fce4ec;
+    --header-color: #880e4f;
+    --header-link-color: #ad1457;
+    --breadcrumbs-bg: #fff;
+    --link-color: #c2185b;
+    --link-hover-color: #880e4f;
+    --button-bg: #f06292;
+    --button-hover-bg: #ec407a;
+    --button-fg: #fff;
+    --accent: #f48fb1;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#header {
+    background: var(--header-bg) !important;
+    color: var(--header-color) !important;
+    border-bottom: 3px solid var(--primary) !important;
+    padding: 15px 40px !important;
+}
+
+#header a:link, #header a:visited {
+    color: var(--header-link-color) !important;
+    font-weight: 600;
+}
+
+div.breadcrumbs {
+    background: var(--breadcrumbs-bg) !important;
+    border-bottom: 1px solid #fce4ec !important;
+    color: #ad1457 !important;
+    padding: 10px 40px !important;
+}
+
+.module h2, .module caption, .inline-group h2 {
+    background: var(--primary) !important;
+    color: var(--primary-fg) !important;
+    font-weight: bold !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: var(--button-bg) !important;
+    border-radius: 20px !important;
+    padding: 10px 25px !important;
+    box-shadow: 0 2px 5px rgba(240, 98, 146, 0.3) !important;
+    border: none !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease;
+}
+
+.button:hover, input[type=submit]:hover {
+    background: var(--button-hover-bg) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(240, 98, 146, 0.4) !important;
+}
+
+#content-main {
+    padding: 20px 40px !important;
+}
+
+.module {
+    border-radius: 10px !important;
+    overflow: hidden;
+    border: 1px solid #fce4ec !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03) !important;
+}

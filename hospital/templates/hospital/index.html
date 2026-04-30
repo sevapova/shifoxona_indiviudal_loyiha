@@ -1,8 +1,8 @@
 {% extends 'hospital/base.html' %}
 
 {% block content %}
+<!-- Statistika Kartalari -->
 <div class="cards">
-    <!-- Card 1 -->
     <div class="card glass-card">
         <div class="card-icon blue-gradient-1">
             <i class="fa-solid fa-user-doctor"></i>
@@ -12,8 +12,6 @@
             <p data-i18n="total_doctors">Malakali Shifokorlar</p>
         </div>
     </div>
-
-    <!-- Card 2 -->
     <div class="card glass-card">
         <div class="card-icon green-gradient">
             <i class="fa-solid fa-user-nurse"></i>
@@ -23,8 +21,6 @@
             <p data-i18n="total_interns">Amaliyotchilar</p>
         </div>
     </div>
-
-    <!-- Card 3 -->
     <div class="card glass-card">
         <div class="card-icon blue-gradient-2">
             <i class="fa-solid fa-bed-pulse"></i>
@@ -34,8 +30,6 @@
             <p data-i18n="sick_patients">Davolanayotgan Bemorlar</p>
         </div>
     </div>
-
-    <!-- Card 4 -->
     <div class="card glass-card">
         <div class="card-icon orange-gradient">
             <i class="fa-solid fa-person-walking-arrow-right"></i>
@@ -44,6 +38,18 @@
             <h3>{{ tuzalgan_bemorlar_soni }}</h3>
             <p data-i18n="recovered_patients">Tuzalgan Bemorlar</p>
         </div>
+    </div>
+</div>
+
+<!-- Grafiklar Bo'limi -->
+<div class="charts-container" style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 25px; margin: 25px 0;">
+    <div class="chart-box glass-card" style="padding: 20px;">
+        <h3 style="margin-bottom: 20px; font-size: 16px; color: #1e293b;"><i class="fa-solid fa-chart-line"></i> <span data-i18n="disease_trends">Kasalliklar bo'yicha tahlil</span></h3>
+        <canvas id="diseaseChart" style="max-height: 250px;"></canvas>
+    </div>
+    <div class="chart-box glass-card" style="padding: 20px;">
+        <h3 style="margin-bottom: 20px; font-size: 16px; color: #1e293b;"><i class="fa-solid fa-chart-pie"></i> <span data-i18n="patient_status_chart">Bemorlar holati</span></h3>
+        <canvas id="statusChart" style="max-height: 250px;"></canvas>
     </div>
 </div>
 
@@ -61,13 +67,9 @@
                     <img src="https://cdn-icons-png.flaticon.com/512/3006/3006876.png" alt="Patient">
                     <div class="d-details">
                         <h4>{{ b.ism }} {{ b.familiya }}</h4>
-                        <span>{{ b.telefon_raqam }} | {{ b.manzil }}</span>
+                        <span>{{ b.telefon_raqam }}</span>
                         <div style="font-size: 11px; margin-top:2px; color:#94a3b8;">
-                            <span data-i18n="arrived">Kelgan vaqti</span>: {{ b.kelgan_vaqti|date:"d-m-Y" }} <br>
-                            {% if b.tuzalgan_vaqti %}
-                            <span data-i18n="healed">Tuzalgan vaqti</span>: <span style="color:#059669">{{
-                                b.tuzalgan_vaqti|date:"d-m-Y" }}</span>
-                            {% endif %}
+                            <span data-i18n="arrived">Kelgan</span>: {{ b.kelgan_vaqti|date:"d.m.Y" }}
                         </div>
                     </div>
                 </div>
@@ -78,13 +80,13 @@
                     <span class="badge green" data-i18n="recovered">Tuzalgan</span>
                     {% endif %}
                 </div>
-                <a href="/admin/hospital/bemor/{{ b.id }}/change/" target="_blank" class="mini-btn"><i
-                        class="fa-solid fa-file-pen"></i></a>
+                <div class="actions" style="display: flex; gap: 5px;">
+                    <a href="{% url 'hospital:patient_pdf' b.id %}" class="mini-btn pdf-btn" title="PDF Hisobot"><i class="fa-solid fa-file-pdf"></i></a>
+                    <a href="/admin/hospital/bemor/{{ b.id }}/change/" target="_blank" class="mini-btn"><i class="fa-solid fa-file-pen"></i></a>
+                </div>
             </li>
             {% empty %}
-            <li data-i18n="no_pat">
-                Tizimda hozircha bemorlar mavjud emas.
-            </li>
+            <li data-i18n="no_pat">Bemorlar yo'q.</li>
             {% endfor %}
         </ul>
     </div>
@@ -92,7 +94,7 @@
     <!-- Shifokorlar List -->
     <div class="doctor-list glass-card">
         <div class="list-header">
-            <h2><i class="fa-solid fa-stethoscope"></i> <span data-i18n="top_doctors">Shifokorlar Ro'yxati</span></h2>
+            <h2><i class="fa-solid fa-stethoscope"></i> <span data-i18n="top_doctors">Shifokorlar</span></h2>
             <a href="/admin/hospital/shifokor/" target="_blank" class="view-all" data-i18n="view_all">Hammasi →</a>
         </div>
         <ul class="d-list">
@@ -102,8 +104,7 @@
                     <img src="https://cdn-icons-png.flaticon.com/512/3774/3774299.png" alt="Doctor">
                     <div class="d-details">
                         <h4>Dr. {{ ds.ism }} {{ ds.familiya }}</h4>
-                        <span>
-                            <span data-i18n="specialist">Mutaxassis:</span>
+                        <span style="font-size: 11px;">
                             {% for kasallik in ds.kasallik_yonalishlari.all %}
                             {{ kasallik.nomi }}{% if not forloop.last %}, {% endif %}
                             {% endfor %}
@@ -111,35 +112,64 @@
                     </div>
                 </div>
                 <div class="d-experience">
-                    <span class="badge">{{ ds.ish_tajribasi_yillar }} <span data-i18n="exp_years">yil
-                            tajriba</span></span>
+                    <span class="badge">{{ ds.ish_tajribasi_yillar }} yil</span>
                 </div>
-                <a href="/admin/hospital/shifokor/{{ ds.id }}/change/" target="_blank" class="mini-btn"><i
-                        class="fa-solid fa-eye"></i></a>
-            </li>
-            {% empty %}
-            <li data-i18n="no_doc">
-                Tizimda hozircha shifokorlar mavjud emas.
+                <a href="/admin/hospital/shifokor/{{ ds.id }}/change/" target="_blank" class="mini-btn"><i class="fa-solid fa-eye"></i></a>
             </li>
             {% endfor %}
         </ul>
     </div>
 </div>
 
-<div class="system-health glass-card" style="margin-top: 25px;">
-    <div class="list-header">
-        <h2><i class="fa-solid fa-virus"></i> <span data-i18n="diseases">Kasalliklar turi</span></h2>
-        <a href="/admin/hospital/kasallik/" target="_blank" class="view-all" data-i18n="view_all">Hammasi →</a>
-    </div>
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
-        {% for k in kasalliklar %}
-        <div style="background: rgba(255,255,255,0.4); padding: 15px; border-radius: 12px; border: 1px solid rgba(37, 99, 235, 0.1);">
-            <h4 style="font-size: 14px; color: #1e293b; margin-bottom: 5px;">{{ k.nomi }}</h4>
-            <p style="font-size: 12px; color: #64748b;">{{ k.tavsifi|truncatechars:50 }}</p>
-        </div>
-        {% empty %}
-        <p data-i18n="no_diseases" style="font-size: 14px; color: #64748b;">Kasallik turlari kiritilmagan.</p>
-        {% endfor %}
-    </div>
-</div>
-{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // 1. Kasalliklar Bar Chart
+    const ctx1 = document.getElementById('diseaseChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: {{ chart_labels|safe }},
+            datasets: [{
+                label: 'Bemorlar soni',
+                data: {{ chart_data|safe }},
+                backgroundColor: 'rgba(255, 105, 180, 0.5)',
+                borderColor: 'rgba(255, 105, 180, 1)',
+                borderWidth: 1,
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // 2. Status Pie Chart
+    const ctx2 = document.getElementById('statusChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: ['Davolanmoqda', 'Tuzalgan'],
+            datasets: [{
+                data: [{{ kasal_bemorlar_soni }}, {{ tuzalgan_bemorlar_soni }}],
+                backgroundColor: ['#ff9f43', '#28c76f'],
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
+        }
+    });
+</script>
+
+<style>
+    .pdf-btn { background: #fee2e2 !important; color: #ef4444 !important; }
+    .pdf-btn:hover { background: #ef4444 !important; color: white !important; }
+    .mini-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; transition: 0.3s; background: rgba(255,255,255,0.5); color: #64748b; }
+    .mini-btn:hover { background: #2563eb; color: white; }
+</style>
+{% endblock %}
