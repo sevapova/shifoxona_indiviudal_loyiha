@@ -1,0 +1,384 @@
+{% extends 'hospital/base.html' %}
+{% load static %}
+
+{% block title %}Xonalar Boshqaruvi - Shifoxona{% endblock %}
+
+{% block content %}
+<div class="rooms-container">
+    <div class="rooms-header">
+        <h2 data-i18n="rooms_mgmt_title">XONALAR BOSHQARUVI</h2>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card free">
+            <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-value">{{ bosh_xonalar }}</div>
+            <div class="stat-label" data-i18n="free_rooms">Bo'sh xonalar</div>
+        </div>
+        <div class="stat-card busy">
+            <div class="stat-icon"><i class="fa-solid fa-bed"></i></div>
+            <div class="stat-value">{{ band_xonalar }}</div>
+            <div class="stat-label" data-i18n="busy_rooms">Band xonalar</div>
+        </div>
+        <div class="stat-card total">
+            <div class="stat-icon"><i class="fa-solid fa-hospital"></i></div>
+            <div class="stat-value">{{ jami_xonalar }}</div>
+            <div class="stat-label" data-i18n="total_rooms">Jami xonalar</div>
+        </div>
+        <div class="stat-card maintenance">
+            <div class="stat-icon"><i class="fa-solid fa-gears"></i></div>
+            <div class="stat-value">{{ tamirda_xonalar }}</div>
+            <div class="stat-label" data-i18n="maintenance">Texnik xizmat</div>
+        </div>
+    </div>
+
+    <!-- Feature Blocks -->
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon blue"><i class="fa-solid fa-bed-pulse"></i></div>
+            <div class="feature-info">
+                <h3 data-i18n="room_types">Xona turlari</h3>
+                <p data-i18n="room_types_desc">Oddiy, VIP, Reanimatsiya, Jarrohlik — har bir xona kategoriyasini boshqarish</p>
+            </div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon green"><i class="fa-solid fa-calendar-check"></i></div>
+            <div class="feature-info">
+                <h3 data-i18n="placement_report">Joylashish hisobi</h3>
+                <p data-i18n="placement_report_desc">Qaysi bemor qaysi xonada, kirish va chiqish sanalari, to'lov holati</p>
+            </div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon purple"><i class="fa-solid fa-chart-line"></i></div>
+            <div class="feature-info">
+                <h3 data-i18n="occupancy_analysis">Bandlik tahlili</h3>
+                <p data-i18n="occupancy_analysis_desc">Xonalar bandlik darajasi, oylik statistika va prognoz</p>
+            </div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon red"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="feature-info">
+                <h3 data-i18n="sanitation_control">Sanitariya nazorati</h3>
+                <p data-i18n="sanitation_control_desc">Xona tozalash jadvali va texnik holatini kuzatish</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rooms Table/List -->
+    <div class="rooms-list-card glass">
+        <div class="list-header">
+            <h3 data-i18n="current_room_status">Xonalarning joriy holati</h3>
+            <div class="list-actions">
+                <button class="btn btn-primary" onclick="window.location.href='/admin/hospital/xona/add/'"><i class="fa-solid fa-plus"></i> Yangi xona</button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="rooms-table">
+                <thead>
+                    <tr>
+                        <th data-i18n="room_name">Xona</th>
+                        <th data-i18n="room_type">Turi</th>
+                        <th data-i18n="patient">Bemor</th>
+                        <th data-i18n="status">Holati</th>
+                        <th data-i18n="last_cleaned">Oxirgi tozalash</th>
+                        <th data-i18n="actions">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for xona in xonalar %}
+                    <tr>
+                        <td><strong>{{ xona.nomi }}</strong></td>
+                        <td>{{ xona.tur.nomi }}</td>
+                        <td>{% if xona.bemor %}{{ xona.bemor }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
+                        <td>
+                            <span class="status-badge status-{{ xona.holat }}">
+                                {{ xona.get_holat_display }}
+                            </span>
+                        </td>
+                        <td>{{ xona.oxirgi_tozalash|date:"d.m.Y H:i" }}</td>
+                        <td>
+                            <a href="/admin/hospital/xona/{{ xona.id }}/change/" class="edit-btn"><i class="fa-solid fa-pen-to-square"></i></a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center" data-i18n="no_rooms">Xonalar mavjud emas</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rooms-container {
+        padding: 20px;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .rooms-header {
+        background: #004d66;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px 10px 0 0;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .rooms-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        padding: 25px;
+        border-radius: 15px;
+        color: white;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+
+    .stat-card.free { background: linear-gradient(135deg, #2e7d32, #4caf50); }
+    .stat-card.busy { background: linear-gradient(135deg, #c62828, #f44336); }
+    .stat-card.total { background: linear-gradient(135deg, #006064, #0097a7); }
+    .stat-card.maintenance { background: linear-gradient(135deg, #f9a825, #fbc02d); }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        opacity: 0.8;
+    }
+
+    .stat-value {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        opacity: 0.9;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .feature-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: background 0.3s ease;
+    }
+
+    .feature-card:hover {
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .feature-icon.blue { background: #e0f2f1; color: #00796b; border-left: 5px solid #00796b; }
+    .feature-icon.green { background: #e8f5e9; color: #2e7d32; border-left: 5px solid #2e7d32; }
+    .feature-icon.purple { background: #f3e5f5; color: #7b1fa2; border-left: 5px solid #7b1fa2; }
+    .feature-icon.red { background: #ffebee; color: #c62828; border-left: 5px solid #c62828; }
+
+    .feature-info h3 {
+        margin: 0 0 5px 0;
+        font-size: 1.1rem;
+        color: #333;
+    }
+
+    .feature-info p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #666;
+        line-height: 1.4;
+    }
+
+    .rooms-list-card {
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(15px);
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+    }
+
+    .list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .list-header h3 {
+        margin: 0;
+        color: #2c3e50;
+    }
+
+    .rooms-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .rooms-table th, .rooms-table td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .rooms-table th {
+        color: #666;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+    }
+
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .status-bo\'sh { background: #e8f5e9; color: #2e7d32; }
+    .status-band { background: #ffebee; color: #c62828; }
+    .status-ta\'mirda { background: #fff8e1; color: #f57f17; }
+    .status-tozalanmoqda { background: #e3f2fd; color: #1565c0; }
+
+    .edit-btn {
+        color: #1565c0;
+        font-size: 1.2rem;
+        transition: color 0.2s;
+    }
+
+    .edit-btn:hover { color: #0d47a1; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<script>
+    // Add additional translations to the existing system
+    const roomTranslations = {
+        'uz': {
+            'rooms_mgmt_title': 'XONALAR BOSHQARUVI',
+            'free_rooms': 'Bo\'sh xonalar',
+            'busy_rooms': 'Band xonalar',
+            'total_rooms': 'Jami xonalar',
+            'maintenance': 'Texnik xizmat',
+            'room_types': 'Xona turlari',
+            'room_types_desc': 'Oddiy, VIP, Reanimatsiya, Jarrohlik — har bir xona kategoriyasini boshqarish',
+            'placement_report': 'Joylashish hisobi',
+            'placement_report_desc': 'Qaysi bemor qaysi xonada, kirish va chiqish sanalari, to\'lov holati',
+            'occupancy_analysis': 'Bandlik tahlili',
+            'occupancy_analysis_desc': 'Xonalar bandlik darajasi, oylik statistika va prognoz',
+            'sanitation_control': 'Sanitariya nazorati',
+            'sanitation_control_desc': 'Xona tozalash jadvali va texnik holatini kuzatish',
+            'current_room_status': 'Xonalarning joriy holati',
+            'room_name': 'Xona',
+            'room_type': 'Turi',
+            'patient': 'Bemor',
+            'status': 'Holati',
+            'last_cleaned': 'Oxirgi tozalash',
+            'actions': 'Amallar',
+            'no_rooms': 'Xonalar mavjud emas',
+        },
+        'ru': {
+            'rooms_mgmt_title': 'УПРАВЛЕНИЕ ПАЛАТАМИ',
+            'free_rooms': 'Свободные палаты',
+            'busy_rooms': 'Занятые палаты',
+            'total_rooms': 'Всего палат',
+            'maintenance': 'Тех. обслуживание',
+            'room_types': 'Типы палат',
+            'room_types_desc': 'Обычные, VIP, Реанимация, Хирургия — управление категориями',
+            'placement_report': 'Учет размещения',
+            'placement_report_desc': 'Кто в какой палате, даты въезда и выезда, статус оплаты',
+            'occupancy_analysis': 'Анализ занятости',
+            'occupancy_analysis_desc': 'Уровень занятости, месячная статистика и прогноз',
+            'sanitation_control': 'Сан. контроль',
+            'sanitation_control_desc': 'График уборки и мониторинг технического состояния',
+            'current_room_status': 'Текущий статус палат',
+            'room_name': 'Палата',
+            'room_type': 'Тип',
+            'patient': 'Пациент',
+            'status': 'Статус',
+            'last_cleaned': 'Последняя уборка',
+            'actions': 'Действия',
+            'no_rooms': 'Палаты отсутствуют',
+        },
+        'en': {
+            'rooms_mgmt_title': 'ROOM MANAGEMENT',
+            'free_rooms': 'Free Rooms',
+            'busy_rooms': 'Occupied Rooms',
+            'total_rooms': 'Total Rooms',
+            'maintenance': 'Maintenance',
+            'room_types': 'Room Types',
+            'room_types_desc': 'Standard, VIP, ICU, Surgery — manage each category',
+            'placement_report': 'Placement Report',
+            'placement_report_desc': 'Which patient in which room, entry and exit dates, payment status',
+            'occupancy_analysis': 'Occupancy Analysis',
+            'occupancy_analysis_desc': 'Room occupancy levels, monthly stats and forecast',
+            'sanitation_control': 'Sanitation Control',
+            'sanitation_control_desc': 'Cleaning schedule and technical status monitoring',
+            'current_room_status': 'Current Room Status',
+            'room_name': 'Room',
+            'room_type': 'Type',
+            'patient': 'Patient',
+            'status': 'Status',
+            'last_cleaned': 'Last Cleaned',
+            'actions': 'Actions',
+            'no_rooms': 'No rooms available',
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentLang = localStorage.getItem('selectedLanguage') || 'uz';
+        const trans = roomTranslations[currentLang];
+        
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (trans[key]) {
+                el.textContent = trans[key];
+            }
+        });
+    });
+</script>
+{% endblock %}

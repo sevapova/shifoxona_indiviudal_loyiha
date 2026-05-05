@@ -61,7 +61,9 @@ class Uchrashuv(models.Model):
     shifokor = models.ForeignKey(Shifokor, on_delete=models.CASCADE, verbose_name="Shifokor")
     sana_va_vaqt = models.DateTimeField(verbose_name="Uchrashuv vaqti")
     holat = models.CharField(max_length=20, choices=HOLAT_CHOICES, default='kutilmoqda', verbose_name="Holati")
+    eslatma_yuborildi = models.BooleanField(default=False, verbose_name="Eslatma yuborildimi?")
     def __str__(self): return f"{self.bemor} - Dr. {self.shifokor} ({self.sana_va_vaqt})"
+
     class Meta:
         verbose_name = "Uchrashuv"
         verbose_name_plural = "Uchrashuvlar"
@@ -88,3 +90,44 @@ class TibbiyYozuv(models.Model):
     class Meta:
         verbose_name = "Tibbiy yozuv"
         verbose_name_plural = "Tibbiy yozuvlar"
+
+class XonaTuri(models.Model):
+    nomi = models.CharField(max_length=100, verbose_name="Kategoriya nomi")
+    tavsifi = models.TextField(null=True, blank=True, verbose_name="Tavsifi")
+    def __str__(self): return self.nomi
+    class Meta:
+        verbose_name = "Xona turi"
+        verbose_name_plural = "Xona turlari"
+
+class Xona(models.Model):
+    HOLAT_CHOICES = [
+        ('bo\'sh', 'Bo\'sh'),
+        ('band', 'Band'),
+        ('ta\'mirda', 'Texnik xizmatda'),
+        ('tozalanmoqda', 'Sanitariya nazoratida')
+    ]
+    nomi = models.CharField(max_length=50, verbose_name="Xona nomi/raqami")
+    tur = models.ForeignKey(XonaTuri, on_delete=models.SET_NULL, null=True, verbose_name="Xona turi")
+    bemor = models.OneToOneField(Bemor, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Bemor", related_name='xona')
+    holat = models.CharField(max_length=20, choices=HOLAT_CHOICES, default='bo\'sh', verbose_name="Holati")
+    kirish_vaqti = models.DateTimeField(null=True, blank=True, verbose_name="Bemor kirgan vaqt")
+    oxirgi_tozalash = models.DateTimeField(default=timezone.now, verbose_name="Oxirgi tozalash vaqti")
+    
+    def save(self, *args, **kwargs):
+        if self.bemor and (self.holat == 'bo\'sh' or self.holat == 'tozalanmoqda'):
+            self.holat = 'band'
+            if not self.kirish_vaqti:
+                self.kirish_vaqti = timezone.now()
+        elif not self.bemor and self.holat == 'band':
+            self.holat = 'bo\'sh'
+            self.kirish_vaqti = None
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.nomi} ({self.get_holat_display()})"
+
+    class Meta:
+        verbose_name = "Xona"
+        verbose_name_plural = "Xonalar"
+
+

@@ -3,7 +3,19 @@ from django.http import HttpResponse
 from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
-from .models import Kasallik, Shifokor, Bemor, Uchrashuv, Amaliyotchi, TibbiyYozuv, Retsept
+from .models import Kasallik, Shifokor, Bemor, Uchrashuv, Amaliyotchi, TibbiyYozuv, Retsept, Xona, XonaTuri
+
+@admin.register(XonaTuri)
+class XonaTuriAdmin(admin.ModelAdmin):
+    list_display = ('nomi',)
+
+@admin.register(Xona)
+class XonaAdmin(admin.ModelAdmin):
+    list_display = ('nomi', 'tur', 'bemor', 'holat', 'oxirgi_tozalash')
+    list_filter = ('holat', 'tur')
+    search_fields = ('nomi', 'bemor__ism')
+
+
 
 def export_shifokorlar_csv(modeladmin, request, queryset):
     response = HttpResponse(content_type='text/csv')

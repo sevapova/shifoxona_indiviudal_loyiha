@@ -1,6 +1,20 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Count
-from .models import Shifokor, Bemor, Kasallik, Uchrashuv, Amaliyotchi, TibbiyYozuv, Retsept
+from .models import Shifokor, Bemor, Kasallik, Uchrashuv, Amaliyotchi, TibbiyYozuv, Retsept, Xona, XonaTuri
+
+def xonalar_boshqaruvi(request):
+    xonalar = Xona.objects.all()
+    context = {
+        'jami_xonalar': xonalar.count(),
+        'bosh_xonalar': xonalar.filter(holat='bo\'sh').count(),
+        'band_xonalar': xonalar.filter(holat='band').count(),
+        'tamirda_xonalar': xonalar.filter(holat='ta\'mirda').count(),
+        'tozalanmoqda_xonalar': xonalar.filter(holat='tozalanmoqda').count(),
+        'xonalar': xonalar,
+        'xona_turlari': XonaTuri.objects.all(),
+    }
+    return render(request, 'hospital/xonalar.html', context)
+
 from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa

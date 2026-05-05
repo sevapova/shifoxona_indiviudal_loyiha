@@ -41,6 +41,9 @@
                             data-i18n="diseases">Kasalliklar turi</span></a></li>
                 <li><a href="/admin/hospital/uchrashuv/" target="_blank"><i class="fa-solid fa-calendar-check"></i>
                         <span data-i18n="appointments">Uchrashuvlar</span></a></li>
+                <li><a href="{% url 'hospital:xonalar' %}"><i class="fa-solid fa-bed"></i> <span
+                            data-i18n="rooms_mgmt">Xonalar boshqaruvi</span></a></li>
+
 
                 <div class="auth-langs">
                     <div class="lang-selector">
@@ -122,6 +125,7 @@
                 'no_diseases': 'Kasallik turlari kiritilmagan.',
                 'specialist': 'Mutaxassis:',
                 'search_placeholder': 'Ism, familiya yoki telefon...',
+                'rooms_mgmt': 'Xonalar boshqaruvi',
             },
             'ru': {
                 'hospital': 'Больница',
@@ -156,6 +160,7 @@
                 'no_diseases': 'Типы болезней не введены.',
                 'specialist': 'Специалист:',
                 'search_placeholder': 'Имя, фамилия или телефон...',
+                'rooms_mgmt': 'Управление палатами',
             },
             'en': {
                 'hospital': 'Hospital',
@@ -190,7 +195,9 @@
                 'no_diseases': 'Disease types not entered.',
                 'specialist': 'Specialist:',
                 'search_placeholder': 'Name, surname or phone...',
+                'rooms_mgmt': 'Room Management',
             }
+
         };
 
         function changeLanguage(lang) {
