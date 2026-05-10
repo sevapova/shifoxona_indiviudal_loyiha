@@ -37,7 +37,7 @@ BOT_TRANS = {
         'select': "✨ *Kerakli bo'limni tanlang:*",
         'm_f1': "🩺 Yangi bemor xabari", 'm_f2': "⏳ Qabul eslatmasi", 'm_f3': "🚪 Xona bo'shalishi",
         'm_f4': "📋 Kunlik hisobot", 'm_f5': "🚨 Tizim ogohlantirishlari",
-        'm_mgmt': "⚙️ Boshqaruv paneli", 'm_lng': "🌐 Tilni o'zgartirish", 'back': "🔙 Orqaga",
+        'm_mgmt': "⚙️ Boshqaruv paneli", 'm_cab': "🔐 Shaxsiy kabinet", 'm_lng': "🌐 Tilni o'zgartirish", 'back': "🔙 Orqaga",
 
         'phone': "📱 *Telefon raqamingizni kiriting:*", 'pass': "🔑 *Parolingizni kiriting:*", 
         'err_auth': "❌ *Xatolik:* Telefon raqam yoki parol noto'g'ri!",
@@ -56,7 +56,7 @@ BOT_TRANS = {
         'select': "✨ *Выберите нужный раздел:*",
         'm_f1': "🩺 Новые пациенты", 'm_f2': "⏳ Напоминания", 'm_f3': "🚪 Статус палат",
         'm_f4': "📋 Ежедневный отчет", 'm_f5': "🚨 Системные алерты",
-        'm_mgmt': "⚙️ Панель управления", 'm_lng': "🌐 Изменить язык", 'back': "🔙 Назад",
+        'm_mgmt': "⚙️ Панель управления", 'm_cab': "🔐 Личный кабинет", 'm_lng': "🌐 Изменить язык", 'back': "🔙 Назад",
         'phone': "📱 Введите номер телефона:", 'pass': "🔑 Введите пароль:",
         'err_auth': "❌ Ошибка входа!",
         'cab_welcome': "👋 Добро пожаловать, *{name}*!", 'my_rec': "📋 Мои диагнозы",
@@ -74,7 +74,7 @@ BOT_TRANS = {
         'select': "✨ *Please select a section:*",
         'm_f1': "🩺 New Patients", 'm_f2': "⏳ Reminders", 'm_f3': "🚪 Room Status",
         'm_f4': "📋 Daily Report", 'm_f5': "🚨 System Alerts",
-        'm_mgmt': "⚙️ Management Panel", 'm_lng': "🌐 Change Language", 'back': "🔙 Back",
+        'm_mgmt': "⚙️ Management Panel", 'm_cab': "🔐 Personal Cabinet", 'm_lng': "🌐 Change Language", 'back': "🔙 Back",
         'phone': "📱 Enter phone number:", 'pass': "🔑 Enter password:",
         'err_auth': "❌ Authentication error!",
         'cab_welcome': "👋 Welcome, *{name}*!", 'my_rec': "📋 My Diagnoses",
@@ -98,12 +98,11 @@ def t(key, chat_id, text=None, **kwargs):
 
 def main_menu(chat_id):
     m = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    m.add(t('m_f1', chat_id))
-    m.add(t('m_f2', chat_id))
-    m.add(t('m_f3', chat_id))
-    m.add(t('m_f4', chat_id))
+    m.add(t('m_f1', chat_id), t('m_f2', chat_id))
+    m.add(t('m_f3', chat_id), t('m_f4', chat_id))
     m.add(t('m_f5', chat_id))
-    m.row(t('m_mgmt', chat_id), t('m_lng', chat_id))
+    m.row(t('m_cab', chat_id), t('m_mgmt', chat_id))
+    m.row(t('m_lng', chat_id))
     return m
 
 @bot.message_handler(func=lambda m: m.text in ["🚪 Xona bo'shalishi", "🚪 Статус палат", "🚪 Room Status"])
