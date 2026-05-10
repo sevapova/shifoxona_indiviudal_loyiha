@@ -129,15 +129,33 @@ def feature_2(message):
     for x in u: txt += f"📅 {x.sana_va_vaqt.strftime('%d.%m %H:%M')} - {x.bemor.ism}\n"
     bot.send_message(message.chat.id, txt, parse_mode='Markdown')
 
+def generate_daily_report():
+    now = timezone.now()
+    sc = Shifokor.objects.count()
+    bc = Bemor.objects.count()
+    active_pats = Bemor.objects.filter(holati='kasal').count()
+    today_pats = Bemor.objects.filter(kelgan_vaqti__date=now.date()).count()
+    today_rec = Bemor.objects.filter(tuzalgan_vaqti__date=now.date(), holati='tuzalgan').count()
+    
+    today_apps = Uchrashuv.objects.filter(sana_va_vaqt__date=now.date()).count()
+    empty_rooms = Xona.objects.filter(holat='bo\'sh').count()
+    total_rooms = Xona.objects.count()
+    
+    report = (f"📋 *KUNLIK HISOBOT ({now.strftime('%d.%m.%Y %H:%M')})*\n"
+              f"━━━━━━━━━━━━━━━━━━━━━\n\n"
+              f"👨‍⚕️ *Shifokorlar:* {sc}\n"
+              f"👥 *Bemorlar:* {bc} (Faol: {active_pats})\n"
+              f"✨ *Bugun kelganlar:* {today_pats}\n"
+              f"✅ *Bugun tuzalganlar:* {today_rec}\n\n"
+              f"📅 *Bugungi uchrashuvlar:* {today_apps}\n"
+              f"🏨 *Xonalar holati:* {total_rooms - empty_rooms} band / {empty_rooms} bo'sh\n\n"
+              f"📊 *Tizim holati:* Normal ✅")
+    return report
+
 @bot.message_handler(func=lambda m: m.text in ["📋 Kunlik hisobot", "📋 Ежедневный отчет", "📋 Daily Report"])
 def feature_4(message):
-    sc, bc = Shifokor.objects.count(), Bemor.objects.count()
-    rc = Xona.objects.filter(holat='bo\'sh').count()
-    txt = (f"📊 *Tezkor statistika*\n"
-           f"👨‍⚕️ Shifokorlar: {sc}\n"
-           f"👥 Bemorlar: {bc}\n"
-           f"🏨 Bo'sh xonalar: {rc}")
-    bot.send_message(message.chat.id, txt, parse_mode='Markdown')
+    report = generate_daily_report()
+    bot.send_message(message.chat.id, report, parse_mode='Markdown')
 
 @bot.message_handler(func=lambda m: m.text in ["🚨 Tizim ogohlantirishlari", "🚨 Системные алерты", "🚨 System Alerts"])
 def feature_5(message):
@@ -294,26 +312,12 @@ def background_scheduler():
                 u.eslatma_yuborildi = True
                 u.save()
 
-            # 2. Kunlik hisobot (Ertalab 08:00 da)
             if now.hour == 8 and now.minute == 0:
                 admin_id = os.getenv("ADMIN_ID")
                 if admin_id and admin_id.strip().isdigit():
-                    sc = Shifokor.objects.count()
-                    bc = Bemor.objects.count()
-                    rc = Xona.objects.filter(holat='bo\'sh').count()
-                    stats = (
-                        f"📊 *Kunlik Hisobot*\n"
-                        f"📅 Sana: {now.strftime('%d.%m.%Y')}\n"
-                        f"━━━━━━━━━━━━━━━\n"
-                        f"👨‍⚕️ Shifokorlar: {sc}\n"
-                        f"👥 Jami bemorlar: {bc}\n"
-                        f"🏥 Bugun kelganlar: {Bemor.objects.filter(kelgan_vaqti__date=now.date()).count()}\n"
-                        f"🏨 Bo'sh xonalar: {rc}\n"
-                        f"━━━━━━━━━━━━━━━\n"
-                        f"✅ Tizim normal holatda ishlamoqda."
-                    )
+                    report = generate_daily_report()
                     try:
-                        bot.send_message(admin_id.strip(), stats, parse_mode="Markdown")
+                        bot.send_message(admin_id.strip(), report, parse_mode="Markdown")
                     except Exception as e:
                         print(f"Admin xabar yuborishda xatolik: {e}")
                 time.sleep(60)

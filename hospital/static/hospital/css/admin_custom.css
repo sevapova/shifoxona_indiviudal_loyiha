@@ -1072,4 +1072,76 @@ input[type="checkbox"] {
 .admin-lang-switcher button.active-lang {
     opacity: 1;
     background: rgba(219, 39, 119, 0.12);
-}
+}
+
+/* ===== KASALLIK & SHIFOKOR HIGHLIGHTING ===== */
+
+/* ManyToMany Horizontal Filter - Selected Items (Green) */
+.selector .selector-chosen h2 {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+}
+
+.selector .selector-chosen select option {
+    background-color: #ecfdf5 !important;
+    color: #065f46 !important;
+    padding: 6px !important;
+}
+
+/* Kasallik related fields - Green Accent */
+.form-row.field-kasalligi label,
+.form-row.field-kasallik_yonalishlari label {
+    color: #059669 !important;
+    font-weight: 700 !important;
+    text-shadow: 0 0 1px rgba(5, 150, 105, 0.1);
+}
+
+.form-row.field-kasalligi select,
+.form-row.field-kasallik_yonalishlari select,
+.form-row.field-kasallik_yonalishlari .selector-available select,
+.form-row.field-kasallik_yonalishlari .selector-chosen select {
+    border-left: 5px solid #10b981 !important;
+}
+
+/* Shifokor related fields - Blue Accent */
+.form-row.field-shifokor label,
+.form-row.field-shifokor_id label,
+.form-row.field-ustoz_shifokor label {
+    color: #2563eb !important;
+    font-weight: 700 !important;
+    text-shadow: 0 0 1px rgba(37, 99, 235, 0.1);
+}
+
+.form-row.field-shifokor select,
+.form-row.field-shifokor_id select,
+.form-row.field-ustoz_shifokor select {
+    border-left: 5px solid #3b82f6 !important;
+}
+
+/* Table List Highlighting */
+#result_list td.field-kasalligi,
+#result_list td.field-display_kasalliklar,
+#result_list td.field-kasallik_yonalishlari {
+    color: #059669 !important;
+    font-weight: 600;
+}
+
+#result_list td.field-shifokor,
+#result_list td.field-ustoz_shifokor {
+    color: #2563eb !important;
+    font-weight: 600;
+}
+
+.model-shifokor #result_list td.field-ism,
+.model-shifokor #result_list td.field-familiya,
+.model-shifokor #result_list td.field-mutaxassislik {
+    color: #2563eb !important;
+    font-weight: 600;
+}
+
+/* Specific highlighting for the doctor selection in forms */
+.field-shifokor select option:checked,
+.field-ustoz_shifokor select option:checked {
+    background-color: #dbeafe !important;
+    color: #1e40af !important;
+}
+

@@ -39,15 +39,34 @@ export_bemorlar_csv.short_description = "Tanlangan bemorlarni Excelga (CSV) yukl
 
 @admin.register(Kasallik)
 class KasallikAdmin(admin.ModelAdmin):
-    list_display = ('nomi', 'tavsifi')
+    list_display = ('display_nomi', 'tavsifi')
     search_fields = ('nomi',)
+
+    def display_nomi(self, obj):
+        return format_html('<span style="color: #059669; font-weight: bold;">🦠 {}</span>', obj.nomi)
+    display_nomi.short_description = "Kasallik nomi"
 
 @admin.register(Shifokor)
 class ShifokorAdmin(admin.ModelAdmin):
-    list_display = ('ism', 'familiya', 'mutaxassislik', 'ish_tajribasi_yillar', 'telefon_raqam', 'download_report')
+    list_display = ('display_ism', 'display_familiya', 'mutaxassislik', 'ish_tajribasi_yillar', 'display_kasalliklar', 'telefon_raqam', 'download_report')
     list_filter = ('kasallik_yonalishlari',)
+    filter_horizontal = ('kasallik_yonalishlari',)
     search_fields = ('ism', 'familiya', 'telefon_raqam')
     actions = [export_shifokorlar_csv]
+
+    def display_ism(self, obj):
+        return format_html('<span style="color: #2563eb; font-weight: bold;">👨‍⚕️ {}</span>', obj.ism)
+    display_ism.short_description = "Ismi"
+
+    def display_familiya(self, obj):
+        return format_html('<span style="color: #2563eb; font-weight: bold;">{}</span>', obj.familiya)
+    display_familiya.short_description = "Familiyasi"
+
+    def display_kasalliklar(self, obj):
+        items = obj.kasallik_yonalishlari.all()
+        return format_html('<div style="max-width: 200px;">{}</div>', 
+                           format_html(", ".join(['<span style="color: #059669;">{}</span>'.format(k.nomi) for k in items])))
+    display_kasalliklar.short_description = 'Davolaydigan kasalliklari'
 
     def download_report(self, obj):
         url = reverse('hospital:doctor_pdf', args=[obj.pk])
@@ -56,11 +75,21 @@ class ShifokorAdmin(admin.ModelAdmin):
 
 @admin.register(Bemor)
 class BemorAdmin(admin.ModelAdmin):
-    list_display = ('ism', 'familiya', 'telefon_raqam', 'kasalligi', 'holati', 'kelgan_vaqti', 'download_report')
+    list_display = ('display_ism', 'familiya', 'telefon_raqam', 'display_kasallik', 'holati', 'kelgan_vaqti', 'download_report')
     list_filter = ('holati', 'kasalligi', 'kelgan_vaqti')
     search_fields = ('ism', 'familiya', 'telefon_raqam')
     date_hierarchy = 'kelgan_vaqti'
     actions = [export_bemorlar_csv]
+
+    def display_ism(self, obj):
+        return format_html('<span style="color: #db2777; font-weight: bold;">👥 {}</span>', obj.ism)
+    display_ism.short_description = "Bemor"
+
+    def display_kasallik(self, obj):
+        if obj.kasalligi:
+            return format_html('<span style="color: #059669; font-weight: bold;">🦠 {}</span>', obj.kasalligi.nomi)
+        return "-"
+    display_kasallik.short_description = "Kasalligi"
 
     def download_report(self, obj):
         url = reverse('hospital:patient_pdf', args=[obj.pk])
@@ -75,17 +104,39 @@ class RetseptAdmin(admin.ModelAdmin):
 
 @admin.register(Uchrashuv)
 class UchrashuvAdmin(admin.ModelAdmin):
-    list_display = ('bemor', 'shifokor', 'sana_va_vaqt', 'holat')
+    list_display = ('display_bemor', 'display_shifokor', 'sana_va_vaqt', 'holat')
     list_filter = ('holat', 'sana_va_vaqt', 'shifokor')
     search_fields = ('bemor__ism', 'bemor__familiya', 'shifokor__ism', 'shifokor__familiya')
 
+    def display_bemor(self, obj):
+        return format_html('<span style="font-weight: bold;">👥 {}</span>', obj.bemor)
+    display_bemor.short_description = "Bemor"
+
+    def display_shifokor(self, obj):
+        return format_html('<span style="color: #2563eb; font-weight: bold;">👨‍⚕️ {}</span>', obj.shifokor)
+    display_shifokor.short_description = "Shifokor"
+
 @admin.register(Amaliyotchi)
 class AmaliyotchiAdmin(admin.ModelAdmin):
-    list_display = ('ism', 'familiya', 'ustoz_shifokor', 'kelgan_sana')
+    list_display = ('ism', 'familiya', 'display_ustoz', 'kelgan_sana')
     list_filter = ('ustoz_shifokor', 'kelgan_sana')
+
+    def display_ustoz(self, obj):
+        if obj.ustoz_shifokor:
+            return format_html('<span style="color: #2563eb; font-weight: bold;">👨‍⚕️ {}</span>', obj.ustoz_shifokor)
+        return "-"
+    display_ustoz.short_description = "Ustoz shifokor"
 
 @admin.register(TibbiyYozuv)
 class TibbiyYozuvAdmin(admin.ModelAdmin):
-    list_display = ('bemor', 'shifokor', 'yozuv_sanasi', 'tashxis')
+    list_display = ('display_bemor', 'display_shifokor', 'yozuv_sanasi', 'tashxis')
     list_filter = ('yozuv_sanasi', 'shifokor')
     search_fields = ('bemor__ism', 'bemor__familiya', 'tashxis')
+
+    def display_bemor(self, obj):
+        return format_html('<span style="font-weight: bold;">👥 {}</span>', obj.bemor)
+    display_bemor.short_description = "Bemor"
+
+    def display_shifokor(self, obj):
+        return format_html('<span style="color: #2563eb; font-weight: bold;">👨‍⚕️ {}</span>', obj.shifokor)
+    display_shifokor.short_description = "Shifokor"
